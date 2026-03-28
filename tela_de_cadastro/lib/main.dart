@@ -15,6 +15,11 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Tela de cadastro", 
+        style: TextStyle(color: Colors.deepOrange),
+        textDirection: te),
+      ),
       body: Container(
         padding: const EdgeInsets.all(30),
         color: Colors.blue.shade100,
