@@ -9,63 +9,103 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-  TextEditingController quantidadeVitorias = TextEditingController();
-  TextEditingController quantidadeEmpates = TextEditingController();
-  TextEditingController quantidadeDerrotas = TextEditingController();
+  final TextEditingController quantidadeVitorias = TextEditingController();
+  final TextEditingController quantidadeEmpates = TextEditingController();
+  final TextEditingController quantidadeDerrotas = TextEditingController();
 
   late int vitorias;
   late int empates;
   late int derrotas;
   late int resultadoFinal;
+  late int validacao;
+
+  void mostrarAlerta(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Atenção!'),
+          content: const Text('Preencha todos os campos corretamente.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green[900],
-        title: Text("Call of Uninassau"),
-        centerTitle: true,
-      ),
-      body: Container(
-        color: Colors.green[800],
-        padding: EdgeInsets.all(30),
+      appBar: AppBar(title: const Text('Call of Uninassau'), centerTitle: true),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text("Preencha os campos abaixo com a quantidade de vitórias, derrotas e empate na MD10:"),
+            const Text(
+              'Preencha os campos abaixo com a quantidade de vitórias, empates e derrotas na MD10:',
+            ),
+            const SizedBox(height: 20),
             TextField(
-              decoration: InputDecoration(label: Text("Quantidade de vitórias: ")),
+              keyboardType: TextInputType.number,
               controller: quantidadeVitorias,
+              decoration: const InputDecoration(
+                labelText: 'Quantidade de vitórias',
+                border: OutlineInputBorder(),
+              ),
             ),
+            const SizedBox(height: 16),
             TextField(
-              decoration: InputDecoration(label: Text("Quantidade de empates: ")),
+              keyboardType: TextInputType.number,
               controller: quantidadeEmpates,
+              decoration: const InputDecoration(
+                labelText: 'Quantidade de empates',
+                border: OutlineInputBorder(),
+              ),
             ),
+            const SizedBox(height: 16),
             TextField(
-              decoration: InputDecoration(label: Text("Quantidade de derrotas: ")),
+              keyboardType: TextInputType.number,
               controller: quantidadeDerrotas,
+              decoration: const InputDecoration(
+                labelText: 'Quantidade de derrotas',
+                border: OutlineInputBorder(),
+              ),
             ),
-            ElevatedButton(onPressed: () {
-              setState(() {
-                vitorias = int.parse(quantidadeVitorias.text);
-                empates = int.parse(quantidadeEmpates.text);
-                derrotas =int.parse(quantidadeDerrotas.text);
-                resultadoFinal = (vitorias * 10) + (empates * 5) + (derrotas * -2);
-              });
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  vitorias = int.tryParse(quantidadeVitorias.text) ?? 0;
+                  empates = int.tryParse(quantidadeEmpates.text) ?? 0;
+                  derrotas = int.tryParse(quantidadeDerrotas.text) ?? 0;
+                  validacao = vitorias + empates + derrotas;
 
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Resultado(),
-                  settings: RouteSettings(
-                    arguments: resultadoFinal
-                  ) 
-                  ),
-                );
-            }, child: Text("Resultado")),
+                  if (validacao == 10) {
+                    resultadoFinal =
+                        (vitorias * 10) + (empates * 5) + (derrotas * -2);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Resultado(),
+                        settings: RouteSettings(arguments: resultadoFinal),
+                      ),
+                    );
+                  } else {
+                    mostrarAlerta(context);
+                  }
+                });
+              },
+              child: const Text('Resultado'),
+            ),
           ],
-        )
+        ),
       ),
     );
   }
